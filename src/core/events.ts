@@ -16,6 +16,9 @@ export class EventBus<E extends object> {
   }
 }
 
+import type { Injury, ToolId, AdhesionGroup } from './state';
+import type * as THREE from 'three';
+
 export type Lang = 'en' | 'ja';
 
 /** All simulator events. Extended milestone by milestone. */
@@ -25,6 +28,21 @@ export interface SimEvents {
   'view:magnification': number;
   'view:labels': boolean;
   'anatomy:opening': number;
+  'tool:select': ToolId;
+  /** Short message for the learner (i18n key + optional severity). */
+  notice: { key: string; level: 'info' | 'warn' | 'alarm' };
+  'hover:structure': string | null;
+  'arachnoid:cut': { patch: string };
+  'adhesion:freed': { group: AdhesionGroup; remaining: number };
+  injury: Injury;
+  rupture: { cause: string; point: THREE.Vector3 | null };
+  coagulate: { point: THREE.Vector3; structure: string };
+  suction: { point: THREE.Vector3; dt: number };
+  'clip:applied': { variant: 'straight' | 'curved' };
+  'clip:removed': Record<string, never>;
+  'tempclip': { applied: boolean };
+  'icg:toggle': boolean;
+  'endoscope:toggle': boolean;
 }
 
 export const bus = new EventBus<SimEvents>();

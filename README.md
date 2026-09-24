@@ -27,7 +27,26 @@ npm run smoke      # headless Chromium smoke test → ./screenshots
 | `F` | Focus on the structure under the cursor |
 | `R` | Reset view |
 | `L` | Anatomy labels |
-| `O` / `P` | Close / open the sylvian fissure (debug until the stage system lands) |
+| `O` / `P` | Close / open the sylvian fissure (limited by uncut arachnoid) |
+| `1`–`0` | Select tool (toolbar at the bottom) |
+| Left button | Use the tool (click, hold or drag depending on the tool) |
+
+### Tools
+
+| Key | Tool | Rule |
+|---|---|---|
+| 1 | Suction | Hold to suction (blood arrives in M4). On the dome it raises the hidden rupture risk. |
+| 2 | Micro scissors | Click arachnoid segments or adhesion strands to cut. Cutting vessels, nerves or the aneurysm injures them. |
+| 3 | Bipolar | Hold ~0.6 s to coagulate: seals oozing points; coagulating PCom / AChA / major arteries / nerves is penalised. |
+| 4 | Dissector | Drag along adhesion strands to free the proximal and distal neck; drag on arachnoid to open it bluntly. Dome/bleb contact raises rupture risk. |
+| 5 | Spatula | Drag the frontal lobe up / temporal lobe down to open the fissure (only as far as the cut arachnoid allows). |
+| 6 | Aneurysm clip | Ghost clip at the cursor: `Q/E` roll, `A/D` tilt, `W/S` blade depth, `C` straight/curved, click to apply, `X` remove last. |
+| 7 | ICG | (M5) fluorescence angiography |
+| 8 | Micro Doppler | (M5) flow sounds |
+| 9 | Endoscope | (M5) picture-in-picture view behind the aneurysm |
+| 0 | Temporary clip | Click the proximal ICA to apply (occlusion timer starts), click the clip to release. |
+
+Add `?quality=low` to the URL on weak GPUs (disables MSAA and ambient occlusion).
 
 ## Tuning the anatomy
 

@@ -13,7 +13,7 @@ export function showStartScreen(host: HTMLElement): { ready: () => void; setStat
       <h2 data-i18n="controls"></h2>
       <ul>
         <li data-i18n="ctlZoom"></li><li data-i18n="ctlPan"></li><li data-i18n="ctlTilt"></li>
-        <li data-i18n="ctlFocus"></li><li data-i18n="ctlLabels"></li>
+        <li data-i18n="ctlFocus"></li><li data-i18n="ctlLabels"></li><li data-i18n="ctlTools"></li>
       </ul>
       <div class="row">
         <button class="primary" data-act="start" data-i18n="start" disabled></button>

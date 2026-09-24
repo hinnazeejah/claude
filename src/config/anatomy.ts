@@ -263,6 +263,16 @@ export const ANATOMY = {
     },
   ] as ArachnoidPatch[],
 
+  /* ------------------------------------------------------------------ adhesions */
+  /** Fibrous strands tethering the aneurysm (see anatomy/adhesions.ts). */
+  adhesions: {
+    seed: 7,
+    count: { proximalNeck: 4, distalNeck: 3, dome: 5 },
+    /** Longest strand (mm) — only structures this close to the sac get tethered. */
+    maxLength: 3.5,
+    radius: [0.05, 0.12] as [number, number],
+  },
+
   /* ------------------------------------------------------------------ spatulas */
   spatulas: [
     // Brain spatulas (self-retaining retractor blades). Each rests on its lobe where the

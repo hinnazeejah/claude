@@ -7,6 +7,9 @@ import { buildArachnoid, type ArachnoidSegment } from './arachnoid';
 import { Spatulas } from './spatulas';
 import { buildSkullBase } from './skullBase';
 import { buildOculomotor } from './nerves';
+import { buildAdhesions, type Adhesion } from './adhesions';
+import { ensureBVH, refitBVH } from '../tools/picking';
+import { SIM } from '../config/sim';
 
 export interface Anatomy {
   root: THREE.Group;
@@ -18,6 +21,8 @@ export interface Anatomy {
   arachnoid: ArachnoidSegment[];
   arachnoidGroup: THREE.Group;
   spatulas: Spatulas;
+  adhesions: Adhesion[];
+  adhesionGroup: THREE.Group;
   retraction: Retraction;
   /** Current fissure opening 0..1. */
   opening: number;
@@ -52,10 +57,24 @@ export async function buildAnatomy(modelUrl: string): Promise<Anatomy> {
 
   const spatulas = new Spatulas(brain);
   root.add(spatulas.group);
-  retraction.onApplied = () => spatulas.seat();
+  ensureBVH(root);
+  retraction.onApplied = () => {
+    for (const m of [brain.frontal, brain.temporal]) refitBVH(m);
+    arachnoidGroup.children.forEach(m => refitBVH(m as THREE.Mesh));
+    spatulas.seat();
+  };
+
+  const V = (id: VesselId) => vessels.get(id)!.meshes;
+  const { group: adhesionGroup, adhesions } = buildAdhesions(aneurysm, shape, {
+    proximalNeck: [...V('pcom'), ...V('ica')],
+    distalNeck: [...V('acha'), ...V('ica')],
+    dome: [oculomotor, brain.temporal, brain.tentorium],
+  }, SIM.dissection.strandWork);
+  root.add(adhesionGroup);
+  ensureBVH(adhesionGroup);
   const anatomy: Anatomy = {
     root, brain, vessels, aneurysm, aneurysmShape: shape, oculomotor,
-    arachnoid: segments, arachnoidGroup, spatulas, retraction,
+    arachnoid: segments, arachnoidGroup, spatulas, retraction, adhesions, adhesionGroup,
     opening: ANATOMY.lobes.initialOpening,
     setOpening(v: number) {
       this.opening = THREE.MathUtils.clamp(v, 0, 1);

@@ -13,6 +13,8 @@ export interface ArachnoidSegment {
   mesh: THREE.Mesh;
   patch: string;
   cut: boolean;
+  /** Blunt-dissection work left (mm of dissector drag); scissors cut instantly. */
+  work: number;
 }
 
 function makeMaterial() {
@@ -126,7 +128,9 @@ export function buildArachnoid(brain: BrainParts, retraction: Retraction) {
       mesh.userData.kind = 'arachnoid';
       mesh.userData.patch = patch.id;
       group.add(mesh);
-      segments.push({ mesh, patch: patch.id, cut: false });
+      const seg: ArachnoidSegment = { mesh, patch: patch.id, cut: false, work: 4 };
+      mesh.userData.segment = seg;
+      segments.push(seg);
       if (patch.mode === 'corridor') retraction.addFollower({ mesh, blend: new Float32Array(blend) });
     }
   }

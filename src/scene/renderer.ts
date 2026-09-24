@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {
   EffectComposer, RenderPass, EffectPass, LambdaPass, BloomEffect, DepthOfFieldEffect, VignetteEffect,
-  ToneMappingEffect, ToneMappingMode, NoiseEffect, BlendFunction, SSAOEffect, NormalPass,
+  ToneMappingEffect, ToneMappingMode, NoiseEffect, BlendFunction, SSAOEffect, NormalPass, OutlineEffect,
 } from 'postprocessing';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { ANATOMY } from '../config/anatomy';
@@ -15,12 +15,17 @@ export class View {
   composer: EffectComposer;
   dof: DepthOfFieldEffect;
   ssao: SSAOEffect;
+  outline: OutlineEffect;
   /** Objects excluded from the ambient-occlusion normal pass. */
   noAO: THREE.Object3D[] = [];
 
+  /** 'low' (URL ?quality=low) drops MSAA and ambient occlusion for weak GPUs. */
+  readonly quality: 'high' | 'low' = new URLSearchParams(location.search).get('quality') === 'low' ? 'low' : 'high';
+
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance', stencil: false, depth: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const scale = Number(new URLSearchParams(location.search).get('scale')) || 0;
+    this.renderer.setPixelRatio(scale || (this.quality === 'low' ? 1 : Math.min(window.devicePixelRatio, 2)));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.NoToneMapping; // done in the post chain
     this.scene.background = new THREE.Color('#000000');
@@ -32,15 +37,17 @@ export class View {
     const m = ANATOMY.microscope;
     this.camera = new THREE.PerspectiveCamera(m.fovDeg, 1, m.workingDistance - 90, m.workingDistance + 400);
 
-    this.composer = new EffectComposer(this.renderer, { frameBufferType: THREE.HalfFloatType, multisampling: 4 });
+    this.composer = new EffectComposer(this.renderer, { frameBufferType: THREE.HalfFloatType, multisampling: this.quality === 'low' ? 0 : 4 });
     this.composer.addPass(new RenderPass(this.scene, this.camera));
 
     // Transparent films (arachnoid, blood later) must not cast ambient occlusion: hide them
     // while the normal buffer is drawn.
     const normalPass = new NormalPass(this.scene, this.camera);
-    this.composer.addPass(new LambdaPass(() => this.noAO.forEach(o => (o.visible = false))));
-    this.composer.addPass(normalPass);
-    this.composer.addPass(new LambdaPass(() => this.noAO.forEach(o => (o.visible = true))));
+    if (this.quality === 'high') {
+      this.composer.addPass(new LambdaPass(() => this.noAO.forEach(o => (o.visible = false))));
+      this.composer.addPass(normalPass);
+      this.composer.addPass(new LambdaPass(() => this.noAO.forEach(o => (o.visible = true))));
+    }
     this.ssao = new SSAOEffect(this.camera, normalPass.texture, {
       blendFunction: BlendFunction.MULTIPLY,
       samples: 16, rings: 5, radius: 0.08, intensity: 2.2, bias: 0.02, fade: 0.02,
@@ -58,10 +65,15 @@ export class View {
     const noise = new NoiseEffect({ blendFunction: BlendFunction.OVERLAY, premultiply: false });
     noise.blendMode.opacity.value = 0.06;
     const scope = new MicroscopeEffect({ focusDist: m.workingDistance });
+    // hover highlight for tool targets
+    this.outline = new OutlineEffect(this.scene, this.camera, {
+      blendFunction: BlendFunction.SCREEN, edgeStrength: 2.2, pulseSpeed: 0, xRay: true, blur: true,
+      visibleEdgeColor: 0x5fe0b8, hiddenEdgeColor: 0x1f4a3e, resolutionScale: 1,
+    });
 
-    this.composer.addPass(new EffectPass(this.camera, this.ssao));
+    if (this.quality === 'high') this.composer.addPass(new EffectPass(this.camera, this.ssao));
     this.composer.addPass(new EffectPass(this.camera, this.dof, bloom));
-    this.composer.addPass(new EffectPass(this.camera, tone, vignette, noise));
+    this.composer.addPass(new EffectPass(this.camera, tone, this.outline, vignette, noise));
     this.composer.addPass(new EffectPass(this.camera, scope));
 
     window.addEventListener('resize', () => this.resize());

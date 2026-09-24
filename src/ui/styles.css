@@ -83,3 +83,27 @@ button.chip[aria-pressed='true'] { border-color: var(--accent); color: var(--acc
   position: absolute; left: 50%; top: 60px; transform: translateX(-50%); padding: 8px 14px; font-size: 13px;
   transition: opacity 0.4s; z-index: 20;
 }
+
+/* toolbar */
+.toolwrap { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: calc(100vw - 24px); }
+.toolbar { display: flex; gap: 2px; padding: 4px; overflow-x: auto; max-width: 100%; }
+.tool {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 66px; padding: 7px 4px 5px;
+  background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--muted); cursor: pointer; font: 10.5px var(--sans);
+}
+.tool svg { width: 24px; height: 24px; }
+.tool:hover { color: var(--text); border-color: var(--line); }
+.tool.active { color: var(--accent); border-color: var(--accent); background: rgba(95, 224, 184, 0.07); }
+.tool .key { position: absolute; top: 2px; left: 4px; font-size: 9px; color: #5b6b67; }
+.tool .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tool .variant { position: absolute; top: 2px; right: 4px; font-size: 9px; color: var(--warn); }
+.toolhint { font-size: 12px; padding: 4px 10px; display: flex; gap: 14px; color: #b9c6c2; min-height: 24px; align-items: center; }
+.toolhint .k { color: var(--accent); }
+.toolhint .k:empty { display: none; }
+
+/* notices */
+.notices { position: absolute; left: 50%; bottom: 128px; transform: translateX(-50%); display: flex; flex-direction: column-reverse; gap: 6px; align-items: center; pointer-events: none; }
+.notice { font-size: 13px; padding: 7px 14px; transition: opacity 0.5s, transform 0.5s; max-width: min(560px, calc(100vw - 32px)); text-align: center; }
+.notice.warn { border-color: rgba(242, 193, 78, 0.6); color: #f6dc9a; }
+.notice.alarm { border-color: rgba(255, 90, 79, 0.8); color: #ffc3bd; background: rgba(60, 8, 6, 0.75); }
+.notice.out { opacity: 0; transform: translateY(6px); }
