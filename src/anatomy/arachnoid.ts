@@ -55,8 +55,9 @@ function makeMaterial() {
 /** A sheet described by a point function over (u,v) ∈ [0,1]² plus a per-vertex retraction blend. */
 type SheetFn = (u: number, v: number) => { p: THREE.Vector3; blend: number };
 
-function fixedSheet(c: Vec3[], bulge: number): SheetFn {
-  const [a, b, cc, d] = c.map(p => new THREE.Vector3(...p));
+function fixedSheet(c: Vec3[], bulge: number, towardEye = 0): SheetFn {
+  const shift = corridor().eye.multiplyScalar(towardEye);
+  const [a, b, cc, d] = c.map(p => new THREE.Vector3(...p).add(shift));
   const normal = b.clone().sub(a).cross(d.clone().sub(a)).normalize();
   return (u, v) => {
     const p = a.clone().lerp(b, u).lerp(d.clone().lerp(cc, u), v);
@@ -102,7 +103,7 @@ export function buildArachnoid(brain: BrainParts, retraction: Retraction) {
     const sheet =
       patch.mode === 'corridor'
         ? corridorSheet(brain, patch.depth!, patch.width!, patch.bulge, gu * sub)
-        : fixedSheet(patch.corners!, patch.bulge);
+        : fixedSheet(patch.corners!, patch.bulge, patch.towardEye);
     for (let i = 0; i < gu; i++) for (let j = 0; j < gv; j++) {
       const pos: number[] = [], idx: number[] = [], puv: number[] = [];
       const blend: number[] = [];

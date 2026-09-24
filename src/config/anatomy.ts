@@ -50,6 +50,8 @@ export interface ArachnoidPatch {
   depth?: number;
   width?: number;
   corners?: Vec3[];
+  /** 'fixed' patches: shift towards the microscope (mm) so the sheet lies in front of vessels. */
+  towardEye?: number;
   grid: [number, number];
   bulge: number;
 }
@@ -251,13 +253,14 @@ export const ANATOMY = {
     },
     {
       // Carotid cistern: between the ICA and the optic nerve.
-      id: 'carotid-cistern', mode: 'fixed',
+      id: 'carotid-cistern', mode: 'fixed', towardEye: 2.5,
       corners: [[-3, 1, 6], [1, 1, 5], [1, -9, 5], [-4, -9, 6]] as Vec3[],
       grid: [3, 3] as [number, number], bulge: 0.8,
     },
     {
       // Arachnoid tethering the aneurysm neck and PCom (lateral to the ICA).
-      id: 'neck-arachnoid', mode: 'fixed',
+      // Sits in front of the neck (towards the microscope), never through the sac.
+      id: 'neck-arachnoid', mode: 'fixed', towardEye: 4.5,
       corners: [[-7.5, -2.5, 2.5], [-5, -3, 4.5], [-5, -9, 3], [-8, -9, 1]] as Vec3[],
       grid: [3, 3] as [number, number], bulge: 0.6,
     },

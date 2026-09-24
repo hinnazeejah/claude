@@ -220,8 +220,13 @@ export function clipModel(kind: 'straight' | 'curved' | 'temporary', mat: THREE.
   g.add(rod(new THREE.Vector3(-0.3, 0, 0.3), new THREE.Vector3(-1.2, 0, 0.9), 0.2, 0.2, mat));
   g.add(rod(new THREE.Vector3(-0.3, 0, -0.3), new THREE.Vector3(-1.2, 0, -0.9), 0.2, 0.2, mat));
   const setGap = (gap: number) => {
-    // blades hinge at the head: tip separation = gap
-    blades.forEach(b => (b.rotation.y = -b.userData.side * Math.atan2(gap / 2, L)));
+    if (kind === 'temporary') {
+      // mini clip drawn with parallel jaws so both lie flush on the (undeformed) vessel
+      blades.forEach(b => (b.position.z = b.userData.side * gap / 2));
+    } else {
+      // blades hinge at the head: tip separation = gap
+      blades.forEach(b => (b.rotation.y = -b.userData.side * Math.atan2(gap / 2, L)));
+    }
   };
   setGap(C.openGap);
   g.traverse(o => ((o as THREE.Mesh).isMesh ? (o.userData.kind = 'clip') : null));

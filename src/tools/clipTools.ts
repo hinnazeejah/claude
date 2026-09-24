@@ -173,6 +173,7 @@ export class TempClipTool extends Tool {
     this.ghost = I.clipModel('temporary', this.ghostMat);
     this.ghost.group.traverse(o => (o.userData.noPick = true));
     this.ghost.group.visible = false;
+    this.ghost.setGap(2 * ctx.anatomy.vessels.get('ica')!.def.radius[0] + 1.2);
     ctx.scene.add(this.ghost.group);
     const curve = ctx.anatomy.vessels.get('ica')!.tubes[0].curve;
     for (let i = 0; i <= 200; i++) this.samples.push({ p: curve.getPointAt(i / 200), t: curve.getTangentAt(i / 200) });
@@ -202,11 +203,13 @@ export class TempClipTool extends Tool {
     let best = this.samples[0], bd = Infinity;
     for (const s of this.samples) { const d = s.p.distanceToSquared(t.point); if (d < bd) { bd = d; best = s; } }
     const F = new THREE.Vector3(); this.ctx.camera.getWorldDirection(F);
-    const blade = F.clone().projectOnPlane(best.t).normalize();
-    const close = best.t.clone();
+    // Blades cross the ICA in the view plane, one in front of and one behind the vessel, and
+    // close towards each other (the vessel is not deformed, so they stop at its diameter).
+    const close = F.clone().negate().projectOnPlane(best.t).normalize();
+    const blade = new THREE.Vector3().crossVectors(best.t, close).normalize();
     const width = new THREE.Vector3().crossVectors(close, blade).normalize();
     const L = SIM.tempClip.bladeLength;
-    const head = best.p.clone().addScaledVector(blade, -L * 0.55);
+    const head = best.p.clone().addScaledVector(blade, -L * 0.5);
     this.frame = new THREE.Matrix4().makeBasis(blade, width, close).setPosition(head);
     const g = this.ghost.group;
     g.visible = true;
@@ -223,7 +226,8 @@ export class TempClipTool extends Tool {
     if (t.object.userData.tempClip) { this.release(); return; }
     if (!this.frame) { this.notice('nTempClipWhere', 'info'); return; }
     const m = I.clipModel('temporary', I.MATS.gold);
-    m.setGap(0.9);
+    const r = this.ctx.anatomy.vessels.get('ica')!.def.radius[0];
+    m.setGap(2 * r + 0.3);
     this.frame.decompose(m.group.position, m.group.quaternion, m.group.scale);
     m.group.traverse(o => { o.userData.kind = 'clip'; o.userData.tempClip = true; });
     this.ctx.anatomy.root.add(m.group);

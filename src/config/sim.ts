@@ -24,7 +24,7 @@ export const SIM = {
   },
   dissection: {
     /** Dissector drag work (mm) needed to free one adhesion strand. */
-    strandWork: 3.0,
+    strandWork: 2.0,
   },
   bipolar: {
     /** Seconds of contact to leave a coagulation mark / seal a bleeding point. */
