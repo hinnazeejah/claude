@@ -223,7 +223,7 @@ export class SpatulaTool extends Tool {
     return hits.find(h => h.kind !== 'arachnoid' && h.kind !== 'adhesion') ?? null;
   }
   judge(t: Target): Verdict {
-    if (t.kind === 'spatula') return 'valid';
+    if (t.kind === 'spatula' || t.kind === 'cottonoid') return 'valid';
     if (t.kind === 'brain' && (t.structure === 'frontal' || t.structure === 'temporal')) return 'valid';
     return 'invalid';
   }

@@ -31,6 +31,7 @@ export class Spatulas {
       const pad = new THREE.Mesh(new RoundedBoxGeometry(def.width * 0.95, 0.5, 10, 2, 0.22), cotton);
       pad.position.set(0, 0.1, 4);
       pad.userData.kind = 'cottonoid';
+      pad.userData.spatula = def.id;
       obj.add(blade, pad);
       this.group.add(obj);
       this.blades.push({ def, obj });

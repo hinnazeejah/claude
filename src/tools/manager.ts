@@ -149,7 +149,7 @@ export class ToolManager {
   }
 
   private emitHover(t: Target | null): void {
-    const key = t ? (t.kind === 'aneurysm' ? t.region! : t.kind === 'arachnoid' ? 'arachnoid' : t.kind === 'adhesion' ? 'adhesion' : t.kind === 'clip' ? 'clip' : t.kind === 'spatula' ? 'spatula' : t.structure) : null;
+    const key = t ? (t.kind === 'aneurysm' ? t.region! : t.kind === 'arachnoid' ? 'arachnoid' : t.kind === 'adhesion' ? 'adhesion' : t.kind === 'clip' ? 'clip' : t.kind === 'spatula' || t.kind === 'cottonoid' ? t.kind : t.structure) : null;
     if (key !== this.hoverKey) {
       this.hoverKey = key;
       bus.emit('hover:structure', key);

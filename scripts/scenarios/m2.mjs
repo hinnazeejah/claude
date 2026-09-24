@@ -18,7 +18,9 @@ export default async function (page, h) {
 
   // 2) spatula: open the fissure by dragging the temporal lobe down
   await h.key('5');
-  const tl = await h.project([-18, -9, 4]);
+  const tlw = await h.state(`__sim.anatomy.spatulas.group.children[1].localToWorld(new __sim.anatomy.root.position.constructor(0, 0.9, 6)).toArray()`);
+  const tl = await h.project(tlw);
+  h.log('spatula target', JSON.stringify(tlw), 'hover', await h.state('String(__sim.tools.active.target && __sim.tools.active.target.kind)'));
   await page.mouse.move(tl.x, tl.y, { steps: 1 }); await h.wait(200);
   await page.mouse.down(); await page.mouse.move(tl.x, tl.y + 260, { steps: 6 }); await page.mouse.up();
   await h.wait(1200);
