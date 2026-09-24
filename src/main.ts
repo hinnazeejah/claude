@@ -52,7 +52,7 @@ buildAnatomy(`${import.meta.env.BASE_URL}models/anatomy.glb`)
   });
 
 bus.on('start', ({ demo }) => {
-  buildHud(hudHost, { opening: anatomy?.opening ?? 0 });
+  buildHud(hudHost, { opening: anatomy?.opening ?? 0, magnification: controls.magnification });
   if (demo) toast(hudHost, t('demoSoon'), 3500);
 });
 bus.on('anatomy:opening', v => (openingGoal = v));

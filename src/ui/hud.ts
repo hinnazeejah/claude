@@ -2,12 +2,12 @@ import { bus } from '../core/events';
 import { applyI18n, getLang, setLang } from './i18n';
 
 /** Top bar: magnification readout, label toggle, fissure-opening slider, language switch. */
-export function buildHud(host: HTMLElement, opts: { opening: number }) {
+export function buildHud(host: HTMLElement, opts: { opening: number; magnification: number }) {
   const bar = document.createElement('div');
   bar.className = 'topbar panel';
   bar.innerHTML = `
     <span class="brand">IC-PC SIM</span><span class="sep"></span>
-    <span class="mono"><span class="k" data-i18n="mag"></span><span data-id="mag">×1.0</span></span>
+    <span class="mono"><span class="k" data-i18n="mag"></span><span data-id="mag">×${opts.magnification.toFixed(1)}</span></span>
     <span class="sep"></span>
     <button class="chip" data-act="labels" aria-pressed="false" data-i18n="labels"></button>
     <label class="mono"><span class="k" data-i18n="opening"></span>
