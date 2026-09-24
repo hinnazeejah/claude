@@ -1,0 +1,26 @@
+{
+  "name": "icpc-aneurysm-sim",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "smoke": "node scripts/smoke.mjs",
+    "models:extract": "node --max-old-space-size=8000 scripts/extract-fbx.mjs",
+    "models:build": "node --max-old-space-size=8000 scripts/build-models.mjs"
+  },
+  "dependencies": {
+    "postprocessing": "^6.39.5",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0",
+    "playwright-core": "^1.63.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1"
+  }
+}

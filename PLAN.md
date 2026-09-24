@@ -41,8 +41,16 @@ src/
 
 - **1 scene unit = 1 mm.** The aneurysm is 6.6 mm in diameter.
 - **Surgical view**: patient supine, head rotated ~30° to the left and extended, so the
-  microscope looks down the right sylvian fissure. On screen: **frontal lobe top, temporal lobe
-  bottom, midline (optic nerve) to the left, ICA deep in the centre**.
+  microscope looks down the right sylvian fissure from anterolateral. On screen: **frontal lobe
+  top, temporal lobe bottom, ICA deep in the centre, midline (optic nerve) to the right**.
+  (Corrected during M1: with a real, non-mirrored view of a right-sided approach from in front and
+  the frontal lobe up, medial structures necessarily appear on the right.)
+- **3D models** (decision after review): brain lobes, insula, optic nerve/chiasm/tract and
+  tentorium are real atlas meshes from BodyParts3D / Z-Anatomy (CC BY-SA), baked into
+  `public/models/anatomy.glb` by `scripts/build-models.mjs`. Context arteries follow atlas
+  centrelines. The atlas collapses the supraclinoid ICA, so that segment, PCom origin, AChA,
+  oculomotor nerve and the aneurysm are defined in `config/anatomy.ts`.
+- **Language**: English by default, Japanese toggle.
 - **Vessels** are `TubeGeometry` along Catmull-Rom splines, defined as control points + radius in
   `config/anatomy.ts`, and linked into a **vessel graph** (node = branch point) used by the flow model:
   - ICA (supraclinoid, ~4 mm) → bifurcation into **M1** (lateral, ~3 mm) and **A1** (medial, ~2 mm)
@@ -144,8 +152,8 @@ console-error check, screenshot), then a short "what to test" note.
 - No soft-body physics; tissue deformation is limited to retraction offsets and shader pulsation.
 - Physiology and rupture models are illustrative, not validated.
 
-## 11. Questions for you (defaults in bold, I'll proceed with these if you just approve)
+## 11. Decisions
 
-1. Default language on first load: **English** (or Japanese)?
-2. Visual target for M1: **stylized-realistic procedural** (no external 3D models/textures), OK?
-3. Mouse mapping: **left = tool, right = pan, wheel = zoom, middle/Alt = tilt**, OK?
+1. Default language: **English** (approved).
+2. Visuals: **real 3D atlas models** where available (approved: "use 3D models").
+3. Mouse mapping: **left = tool, right = pan, wheel = zoom, middle/Alt = tilt** (approved).

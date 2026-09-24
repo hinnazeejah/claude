@@ -1,0 +1,21 @@
+{
+  "files": {
+    "CardioVascular41.fbx": [
+      "Internal_carotid_arteryr", "Posterior_communicating_arteryr",
+      "Middle_cerebral_artery_(M1-segment)r", "Insular_branches_of_middle_cerebral_artery_(M2)r",
+      "Anterior_cerebral_arteryr", "Anterior_communicating_artery", "Posterior_cerebral_arteryr",
+      "Basilar_artery", "Ophthalmic_arteryr", "Temporal_branches_of_middle_cerebral_arteryr",
+      "Middle_cerebral_artery_(M3-segment)r"
+    ],
+    "NervousSystem100.fbx": [
+      "Optic_nerve_(II)r", "Optic_chiasmr", "Optic_tractr", "Oculomotor_nerve_(III)r", "Tentorium_cerebellir",
+      "Orbital_gyrir", "Straight_gyrus_(Gyrus_rectus)r", "Orbital_part_of__inferior_frontal_gyrusr",
+      "Triangular_part_of_inferior_frontal_gyrusr", "Opercular_part_of_inferior_frontal_gyrusr",
+      "Orbital_gyri_(Frontomarginal_gyrus_and_sulcus*)r", "Orbital_sulci_(Lateral_Orbital_sulcus*)r",
+      "Orbital_sulci_(H-shaped_orbital_sulci*)r", "Olfactory_sulcusr", "Inferior_frontal_sulcusr", "Middle_frontal_gyrusr", "Precentral_gyrusr",
+      "Temporal_poler", "Superior_temporal_gyrus_(Lateral_part)r", "Middle_temporal_gyrusr", "Superior_temporal_sulcusr",
+      "Temporal_planer", "Medial_occipitotemporal_gyrus_(Parahippocampal*)r", "Inferior_temporal_gyrusr",
+      "Insula_(Subcentral_gyrus_and_ant_and_post_sulci*)r", "Circular_sulcus_of_insular"
+    ]
+  }
+}
