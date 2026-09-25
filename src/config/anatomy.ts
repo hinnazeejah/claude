@@ -144,7 +144,7 @@ export const ANATOMY = {
       id: 'pcom', parent: 'ica', tint: 'small', pulse: 0.04, delay: 0.04,
       source: {
         points: [
-          [-3.5, -6.2, 1.9], [-3.1, -6.0, -0.4], [-1.9, -5.3, -3.0], [-0.2, -3.6, -5.6],
+          [-3.3, -7.0, 2.0], [-2.3, -6.8, -0.2], [-1.1, -6.0, -2.8], [0.0, -4.0, -5.6],
           [1.5, -1.2, -8.0], [2.9, 1.3, -9.9], [3.7, 3.0, -10.8],
         ],
       },
@@ -157,8 +157,8 @@ export const ANATOMY = {
       id: 'acha', parent: 'ica', tint: 'small', pulse: 0.035, delay: 0.05,
       source: {
         points: [
-          [-2.9, -2.9, 1.4], [-3.9, -3.2, -0.8], [-5.6, -3.6, -3.6], [-7.9, -3.4, -6.9],
-          [-10.5, -2.5, -10.4], [-13.4, -1.3, -14.2],
+          [-2.6, -1.9, 1.3], [-3.6, -2.0, -0.9], [-5.4, -2.5, -3.7], [-7.9, -3.0, -6.9],
+          [-10.5, -2.4, -10.4], [-13.4, -1.3, -14.2],
         ],
       },
       radius: [0.5, 0.4],
@@ -184,7 +184,7 @@ export const ANATOMY = {
     /** Maximum dome diameter (mm). */
     domeDiameter: 6.6,
     /** Neck diameter (mm). Dome-to-neck ratio > 1.5 favours clipping. */
-    neckDiameter: 4.0,
+    neckDiameter: 3.8,
     /** Distance from neck plane to where the dome reaches full width (mm). */
     neckLength: 1.1,
     /** Small daughter sac on the dome: the thinnest, most fragile wall — do not touch it. */

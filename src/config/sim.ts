@@ -40,6 +40,20 @@ export const SIM = {
     rotateStep: Math.PI / 24,
     depthStep: 0.4,
   },
+  eval: {
+    /** Clip plane this far out along the neck (mm) still counts as flush with the parent artery. */
+    flushNeckMm: 0.6,
+    /** Distance over which the sac widens from neck to dome (mm). */
+    neckFlare: 2.8,
+    /** Neck closure at which the sac is considered excluded from the circulation. */
+    sealedAt: 0.95,
+    /** Length of each branch checked for entrapment (mm). */
+    branchCheckMm: 5,
+    /** Residual neck (mm) worth flagging. */
+    residualWarnMm: 1.0,
+    /** ICA stenosis (fraction) worth flagging. */
+    stenosisWarn: 0.3,
+  },
   stages: {
     /** Fissure opening that counts as "opened" for stage 1 (0..1). */
     openingGoal: 0.6,
