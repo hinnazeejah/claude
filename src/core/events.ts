@@ -30,8 +30,10 @@ export interface SimEvents {
   'anatomy:opening': number;
   'tool:select': ToolId;
   /** Short message for the learner (i18n key + optional severity). */
-  notice: { key: string; level: 'info' | 'warn' | 'alarm' };
+  notice: { key: string; level: 'info' | 'warn' | 'alarm'; arg?: string };
   'hover:structure': string | null;
+  /** Structure the learner is looking at (first solid tissue under the cursor, through membranes). */
+  'look:structure': string | null;
   'arachnoid:cut': { patch: string };
   'adhesion:freed': { group: AdhesionGroup; remaining: number };
   injury: Injury;
@@ -43,6 +45,10 @@ export interface SimEvents {
   'tempclip': { applied: boolean };
   'icg:toggle': boolean;
   'endoscope:toggle': boolean;
+  identified: string;
+  'stage:changed': { index: number };
+  'stage:progress': { index: number };
+  'procedure:complete': Record<string, never>;
 }
 
 export const bus = new EventBus<SimEvents>();

@@ -46,6 +46,13 @@ npm run smoke      # headless Chromium smoke test → ./screenshots
 | 9 | Endoscope | (M5) picture-in-picture view behind the aneurysm |
 | 0 | Temporary clip | Click the proximal ICA to apply (occlusion timer starts), click the clip to release. |
 
+### Procedure (M3)
+
+The left panel lists the six stages; the mentor (bottom right, `M` to collapse) shows calm
+guidance, sub-task checkboxes and overall progress. Each stage unlocks the next when its required
+sub-tasks are done. **Identify** a structure by resting the cursor on it for ~1 s with any tool
+(it works through transparent arachnoid). Stage definitions live in `src/procedure/stages.ts`.
+
 Add `?quality=low` to the URL on weak GPUs (disables MSAA and ambient occlusion).
 
 ## Tuning the anatomy
@@ -79,7 +86,7 @@ src/core       event bus, clock, pulse waveform
 src/scene      renderer + microscope post-processing, camera controls, lighting, labels
 src/anatomy    model loading, vessels, aneurysm (SDF + marching cubes), arachnoid, spatulas, shaders
 src/tools      (M2) surgical tools
-src/procedure  (M3) stages, goals, demo mode
+src/procedure  stages + goals, engine (demo mode in M6)
 src/physics    (M4/M5) bleeding, flow network, clip evaluation
 src/audio      (M4/M5) Doppler, alarms
 src/ui         start screen, HUD, i18n (EN / 日本語)

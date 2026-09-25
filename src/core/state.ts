@@ -67,8 +67,15 @@ export const state = {
   clipsApplied: 0,
   tempClip: { applied: false, since: 0, totalSeconds: 0, count: 0 },
 
-  /** Structures the learner has identified (hover/Doppler — used by stages in M3). */
+  /** Structures the learner has identified (dwelling on them with the cursor). */
   identified: new Set<string>(),
+  /** Verification checks with the time they were done, e.g. 'doppler:pcom', 'icg'. */
+  checks: new Map<string, number>(),
+  /** Time of the most recent clip application / removal (checks must come after it). */
+  lastClipChange: -1,
+  /** Procedure progress (M3 stage engine). */
+  stage: 0,
+  complete: false,
 
   log: [] as LogEntry[],
 };

@@ -19,6 +19,8 @@ import { initTissueState, requestOpening } from './tools/tissue';
 import { state } from './core/state';
 import { updateTweens } from './core/tween';
 import { SIM } from './config/sim';
+import { ProcedureEngine } from './procedure/engine';
+import { buildChecklist, buildMentor } from './ui/procedurePanels';
 
 const canvas = document.getElementById('view') as HTMLCanvasElement;
 const hudHost = document.getElementById('hud')!;
@@ -34,6 +36,7 @@ start.setStatus('Loading anatomy…');
 
 let anatomy: Anatomy | null = null;
 let tools: ToolManager | null = null;
+let procedure: ProcedureEngine | null = null;
 const marks = new Marks();
 view.scene.add(marks.group);
 
@@ -73,10 +76,14 @@ bus.on('start', ({ demo }) => {
   buildHud(hudHost, { opening: anatomy?.opening ?? 0, magnification: controls.magnification });
   buildToolbar(hudHost, id => tools?.select(id));
   buildNotices(hudHost);
+  procedure = new ProcedureEngine();
+  buildChecklist(hudHost, procedure);
+  buildMentor(hudHost, procedure);
   if (tools) tools.enabled = true;
   if (demo) toast(hudHost, t('demoSoon'), 3500);
 });
 bus.on('anatomy:opening', v => (state.retraction.opening = Math.min(v, state.retraction.allowed)));
+bus.on('identified', k => bus.emit('notice', { key: 'identifiedPrefix', level: 'info', arg: `a.${k}` }));
 bus.on('rupture', () => bus.emit('notice', { key: 'nRupture', level: 'alarm' }));
 bus.on('adhesion:freed', ({ group, remaining }) => {
   if (remaining === 0 && group !== 'dome') bus.emit('notice', { key: group === 'proximalNeck' ? 'nProximalFreed' : 'nDistalFreed', level: 'info' });
@@ -112,6 +119,7 @@ function frame() {
   updateRetractionStats(dt);
   controls.update(dt);
   tools?.update(dt);
+  procedure?.update(dt);
   light.update(view.camera, controls.target);
   view.dof.target!.copy(controls.target);
   view.render(dt);
@@ -121,4 +129,4 @@ function frame() {
 requestAnimationFrame(frame);
 
 // Debug handle for tests and the console.
-Object.assign(window, { __sim: { view, controls, clock, state, get anatomy() { return anatomy; }, get tools() { return tools; } } });
+Object.assign(window, { __sim: { view, controls, clock, state, get anatomy() { return anatomy; }, get tools() { return tools; }, get procedure() { return procedure; } } });

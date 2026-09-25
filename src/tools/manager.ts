@@ -27,6 +27,8 @@ export class ToolManager {
   private mouse = { x: 0, y: 0, inside: false };
   private down: { x: number; y: number } | null = null;
   private hoverKey: string | null = null;
+  private lookKey: string | null = null;
+  private lastHits: Target[] = [];
   private outlined: THREE.Object3D | null = null;
   enabled = true;
 
@@ -101,6 +103,7 @@ export class ToolManager {
   private pickNow(): void {
     if (!this.mouse.inside) { this.active.target = null; return; }
     const hits = this.picker.pick(this.mouse.x, this.mouse.y, this.dom.clientWidth, this.dom.clientHeight);
+    this.lastHits = hits;
     this.active.target = this.active.choose(hits);
   }
 
@@ -122,6 +125,7 @@ export class ToolManager {
   update(dt: number): void {
     const tool = this.active;
     if (!this.down) this.pickNow();
+    this.emitLook();
     const t = tool.target;
     const inst = tool.instrument.group;
     if (!this.enabled || !t) {
@@ -146,6 +150,18 @@ export class ToolManager {
     tool.seat(t, shaft, R);
     this.dom.style.cursor = 'none';
     tool.update(dt);
+  }
+
+  /** What is being looked at, seen through transparent membranes and instruments. */
+  private emitLook(): void {
+    const see = this.enabled && this.mouse.inside
+      ? this.lastHits.find(h => !['arachnoid', 'adhesion', 'clip', 'spatula', 'cottonoid'].includes(h.kind)) ?? null
+      : null;
+    const key = see ? (see.kind === 'aneurysm' ? see.region! : see.structure) : null;
+    if (key !== this.lookKey) {
+      this.lookKey = key;
+      bus.emit('look:structure', key);
+    }
   }
 
   private emitHover(t: Target | null): void {

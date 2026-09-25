@@ -140,6 +140,7 @@ export class ClipTool extends Tool {
     this.clipsGroup.add(g);
     state.clips.push(placed);
     state.clipsApplied++;
+    state.lastClipChange = state.time;
     logEvent('clip-applied', `${placed.variant}`);
     bus.emit('clip:applied', { variant: placed.variant });
     this.notice('nClipApplied', 'info');
@@ -149,6 +150,7 @@ export class ClipTool extends Tool {
     const c = state.clips.pop();
     if (!c) return;
     this.clipsGroup.remove(c.object);
+    state.lastClipChange = state.time;
     logEvent('clip-removed');
     bus.emit('clip:removed', {});
   }

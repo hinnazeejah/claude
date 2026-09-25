@@ -60,13 +60,14 @@ export function buildNotices(host: HTMLElement): void {
   box.className = 'notices';
   host.appendChild(box);
   const recent = new Map<string, number>();
-  bus.on('notice', ({ key, level }) => {
+  bus.on('notice', ({ key, level, arg }) => {
     const now = performance.now();
-    if ((recent.get(key) ?? 0) > now - 3500) return;
-    recent.set(key, now);
+    const id = arg ? `${key}:${arg}` : key;
+    if ((recent.get(id) ?? 0) > now - 3500) return;
+    recent.set(id, now);
     const el = document.createElement('div');
     el.className = `notice panel ${level}`;
-    el.textContent = t(key);
+    el.textContent = arg ? `${t(key)} ${t(arg)}` : t(key);
     box.prepend(el);
     while (box.children.length > 4) box.lastElementChild!.remove();
     setTimeout(() => el.classList.add('out'), level === 'alarm' ? 6000 : 3800);

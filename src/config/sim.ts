@@ -40,6 +40,12 @@ export const SIM = {
     rotateStep: Math.PI / 24,
     depthStep: 0.4,
   },
+  stages: {
+    /** Fissure opening that counts as "opened" for stage 1 (0..1). */
+    openingGoal: 0.6,
+    /** Seconds the cursor must rest on a structure to identify it. */
+    identifyDwell: 0.8,
+  },
   tempClip: {
     bladeLength: 5,
     openGap: 4.2,
