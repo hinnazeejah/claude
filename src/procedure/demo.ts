@@ -101,7 +101,13 @@ export class DemoDirector {
   private async cutPatches(prefix: string) {
     this.tool('scissors');
     for (const seg of this.a.arachnoid.filter(s => s.patch.startsWith(prefix) && !s.cut)) {
-      await this.click(this.centre(seg.mesh), 90);
+      await this.aim(this.centre(seg.mesh), 450);
+      // only close the scissors if the membrane itself is under the tips (never nick the pia)
+      if (this.tools.peek()?.object === seg.mesh) {
+        this.tools.press();
+        await this.wait(90);
+        this.tools.release();
+      }
       if (!seg.cut) cutArachnoid(seg);
       await this.wait(160);
     }
