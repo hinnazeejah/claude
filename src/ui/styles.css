@@ -163,9 +163,11 @@ button.chip[aria-pressed='true'] { border-color: var(--accent); color: var(--acc
 .vc.alarm b { color: #ff5a4f !important; animation: blink 1s steps(2) infinite; }
 @keyframes blink { 50% { opacity: 0.35; } }
 /* PiP endoscope */
-.pip { position: absolute; left: 12px; bottom: 100px; width: 250px; height: 250px; border-radius: 50%; border: 2px solid #2b3a37; box-shadow: 0 0 0 4px rgba(0,0,0,0.7), inset 0 0 40px 18px #000; pointer-events: none; }
+.pip { position: absolute; left: 12px; bottom: 100px; width: 250px; height: 250px; pointer-events: none;
+  background: radial-gradient(circle closest-side, transparent 88%, rgba(0,0,0,0.85) 97%, #000 100%); }
+.pip::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #2b3a37; }
 .pip span { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font: 10px var(--mono); color: var(--accent); letter-spacing: 0.1em; white-space: nowrap; }
-.icgbadge { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); padding: 4px 12px; font: 12px var(--mono); color: #aef5c9; letter-spacing: 0.12em; }
+.icgbadge { position: absolute; top: 66px; left: 50%; transform: translateX(-50%); padding: 4px 12px; font: 12px var(--mono); color: #aef5c9; letter-spacing: 0.12em; }
 .topbar button.mute { min-width: 30px; }
 
 /* debrief */

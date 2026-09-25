@@ -19,7 +19,7 @@ export class IcgView {
   t = 0;
   private saved = new Map<THREE.Mesh | THREE.Points, THREE.Material | THREE.Material[]>();
   private hidden: THREE.Object3D[] = [];
-  private glow = new Map<THREE.Mesh, { mat: THREE.MeshBasicMaterial; key: string }>();
+  private glow = new Map<THREE.Mesh, { mat: THREE.MeshStandardMaterial; key: string }>();
   private dark = new THREE.MeshBasicMaterial({ color: '#050605' });
   private parenchyma = new THREE.MeshBasicMaterial({ color: '#000000' });
   private tint = new THREE.Color('#e4ffe9');
@@ -44,7 +44,8 @@ export class IcgView {
       if (!m.isMesh && !(o as THREE.Points).isPoints) return;
       this.saved.set(m, m.material);
       if (kind === 'vessel' || kind === 'aneurysm') {
-        const mat = new THREE.MeshBasicMaterial({ color: '#000' });
+        // emissive dye glow plus a little shading from the scope light keeps the tube shape readable
+        const mat = new THREE.MeshStandardMaterial({ color: '#000', emissive: '#000', roughness: 0.55, metalness: 0 });
         this.glow.set(m, { mat, key: kind === 'aneurysm' ? 'aneurysm' : (m.userData.vessel as string) });
         m.material = mat;
       } else if (kind === 'brain') m.material = this.parenchyma;
@@ -74,7 +75,9 @@ export class IcgView {
       let k: number;
       if (key === 'aneurysm') k = (flow.aneurysm ?? 0) * THREE.MathUtils.smoothstep(t, 0.6, 3.2);
       else k = ((flow as Record<string, number>)[key] ?? 1) * THREE.MathUtils.smoothstep(t, DELAY[key] ?? 0.5, (DELAY[key] ?? 0.5) + 1.1);
-      mat.color.copy(this.tint).multiplyScalar(Math.min(1.4, k * washout * 1.3));
+      const I = Math.min(1.3, k * washout * 1.2);
+      mat.color.copy(this.tint).multiplyScalar(I * 0.55);
+      mat.emissive.copy(this.tint).multiplyScalar(I * 0.55);
     }
     const blush = 0.07 * THREE.MathUtils.smoothstep(t, 2.5, 6) * washout;
     this.parenchyma.color.setRGB(blush * 0.8, blush, blush * 0.85);

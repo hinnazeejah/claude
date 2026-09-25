@@ -31,7 +31,7 @@ try {
   await page.goto(small ? url + (url.includes('?') ? '&' : '?') + 'quality=low' : url);
   await page.waitForSelector('button[data-act=start]:not([disabled])', { timeout: 90000 });
   await page.screenshot({ path: 'screenshots/00-start.png' });
-  await page.click('button[data-act=start]');
+  await page.click(args.includes('--demo') ? 'button[data-act=demo]' : 'button[data-act=start]');
   await page.waitForTimeout(2500);
   await page.screenshot({ path: 'screenshots/01-field.png' });
   if (scenario) {

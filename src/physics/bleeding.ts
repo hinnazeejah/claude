@@ -96,8 +96,12 @@ export class Bleeding {
     this.group.add(this.points);
 
     bus.on('rupture', ({ point }) => {
-      const p = point ?? this.shape.blebCenter.clone();
-      this.rupture = { point: p, normal: p.clone().sub(this.shape.domeCenter).normalize() };
+      // default tear: the thin dome wall next to the bleb, on the side facing the microscope
+      const eye = new THREE.Vector3(...ANATOMY.microscope.eyeDir).normalize();
+      const s = this.shape;
+      const dirTear = s.blebCenter.clone().sub(s.domeCenter).normalize().multiplyScalar(0.55).add(eye).normalize();
+      const p = point ?? s.domeCenter.clone().addScaledVector(dirTear, s.domeRadius * 0.98);
+      this.rupture = { point: p, normal: p.clone().sub(s.domeCenter).normalize().add(eye.multiplyScalar(0.5)).normalize() };
     });
     bus.on('suction', ({ point, dt }) => this.suction(point, dt));
   }
@@ -154,7 +158,7 @@ export class Bleeding {
     // emit droplets
     const pulse = arterialPulse(heartPhase);
     for (const s of src) {
-      this.emitAcc += s.mlPerS * dt * (s.arterial ? 120 : 60);
+      this.emitAcc += s.mlPerS * dt * (s.arterial ? 220 : 90);
       while (this.emitAcc >= 1) {
         this.emitAcc -= 1;
         const i = this.head;
@@ -165,7 +169,7 @@ export class Bleeding {
         this.pos.set([s.point.x, s.point.y, s.point.z], 3 * i);
         this.vel.set([v.x, v.y, v.z], 3 * i);
         this.life[i] = s.arterial ? 0.5 + Math.random() * 0.5 : 0.8 + Math.random() * 1.2;
-        this.size[i] = (s.arterial ? 0.35 : 0.25) + Math.random() * 0.3;
+        this.size[i] = (s.arterial ? 0.18 : 0.14) + Math.random() * 0.18;
       }
     }
     // integrate

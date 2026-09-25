@@ -157,3 +157,9 @@ console-error check, screenshot), then a short "what to test" note.
 1. Default language: **English** (approved).
 2. Visuals: **real 3D atlas models** where available (approved: "use 3D models").
 3. Mouse mapping: **left = tool, right = pan, wheel = zoom, middle/Alt = tilt** (approved).
+
+## 12. Status
+
+All six milestones are implemented (M1 scene and anatomy, M2 tools, M3 stages, M4 vitals and
+bleeding, M5 clip evaluation / ICG / Doppler / endoscope, M6 debrief, demo mode and polish).
+See the README for controls and where each system lives.
