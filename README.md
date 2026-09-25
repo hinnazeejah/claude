@@ -9,6 +9,9 @@ rendered as if seen through an operating microscope.
 
 ## Run
 
+Requires **Node.js 22.12+** (`nvm use` picks it up from `.nvmrc`). If `npm run dev` fails with
+"Cannot find native binding", delete `node_modules` and `package-lock.json` and run `npm install` again.
+
 ```bash
 npm install
 npm run dev        # http://localhost:5173
