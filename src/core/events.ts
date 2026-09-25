@@ -49,6 +49,7 @@ export interface SimEvents {
   'stage:changed': { index: number };
   'stage:progress': { index: number };
   'procedure:complete': Record<string, never>;
+  'demo:running': boolean;
 }
 
 export const bus = new EventBus<SimEvents>();

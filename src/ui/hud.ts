@@ -2,7 +2,7 @@ import { bus } from '../core/events';
 import { applyI18n, getLang, setLang } from './i18n';
 
 /** Top bar: magnification readout, label toggle, fissure-opening slider, language switch. */
-export function buildHud(host: HTMLElement, opts: { opening: number; magnification: number }) {
+export function buildHud(host: HTMLElement, opts: { opening: number; magnification: number; onEnd?: () => void; onMute?: () => boolean }) {
   const bar = document.createElement('div');
   bar.className = 'topbar panel';
   bar.innerHTML = `
@@ -13,7 +13,9 @@ export function buildHud(host: HTMLElement, opts: { opening: number; magnificati
     <label class="mono"><span class="k" data-i18n="opening"></span>
       <input type="range" min="0" max="100" value="${Math.round(opts.opening * 100)}" data-id="opening" /></label>
     <span class="sep"></span>
-    <button class="chip" data-act="lang" data-i18n="lang"></button>`;
+    <button class="chip mute" data-act="mute" aria-pressed="true" data-i18n="mute"></button>
+    <button class="chip" data-act="lang" data-i18n="lang"></button>
+    <button class="chip" data-act="end" data-i18n="endProcedure"></button>`;
   host.appendChild(bar);
   applyI18n(bar);
 
@@ -27,6 +29,8 @@ export function buildHud(host: HTMLElement, opts: { opening: number; magnificati
     const act = (e.target as HTMLElement).dataset.act;
     if (act === 'lang') setLang(getLang() === 'en' ? 'ja' : 'en');
     if (act === 'labels') bus.emit('view:labels', labelsBtn.getAttribute('aria-pressed') !== 'true');
+    if (act === 'end') opts.onEnd?.();
+    if (act === 'mute' && opts.onMute) (e.target as HTMLElement).setAttribute('aria-pressed', String(!opts.onMute()));
   });
   slider.addEventListener('input', () => bus.emit('anatomy:opening', Number(slider.value) / 100));
   return bar;

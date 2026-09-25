@@ -125,6 +125,14 @@ export const PATTERNS = {
     col = mix(col, uDetailA, v * 0.45);
     hgt = fib * 0.03 + v * 0.1;
   `,
+  /** Blood pool: dark, glossy, slowly moving surface. */
+  blood: /* glsl */ `
+    float n1 = snoise(p * 0.45 + vec3(0.0, 0.0, uTime * 0.35));
+    float n2 = snoise(p * 1.6 - vec3(uTime * 0.25));
+    col *= 0.8 + 0.25 * n1;
+    col = mix(col, uDetailA, smoothstep(0.3, 0.8, n2) * 0.5);
+    hgt = n1 * 0.35 + n2 * 0.12;
+  `,
   none: /* glsl */ ``,
 } as const;
 
@@ -183,7 +191,7 @@ export function enhance<M extends THREE.MeshPhysicalMaterial>(mat: M, o: Enhance
       .replace(
         '#include <common>',
         `#include <common>
-        uniform vec3 uDetailA; uniform vec3 uDetailB; uniform float uBump; uniform float uIcg;
+        uniform vec3 uDetailA; uniform vec3 uDetailB; uniform float uBump; uniform float uIcg; uniform float uTime;
         varying vec3 vObjPos; varying vec2 vUvDetail; varying float vThin;
         float gHgt = 0.0;
         ${NOISE_GLSL}

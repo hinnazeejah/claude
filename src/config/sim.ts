@@ -40,6 +40,35 @@ export const SIM = {
     rotateStep: Math.PI / 24,
     depthStep: 0.4,
   },
+  vitals: {
+    baseHr: 72,
+    baseMap: 88,
+    /** Blood loss (ml) compensated with little change in pressure. */
+    compensatedMl: 350,
+    /** Temporary occlusion considered safe (s); MEP starts falling after this. */
+    safeOcclusionS: 300,
+    /** MEP % lost per second of ischaemic insult. */
+    mepLossPerS: 0.18,
+    /** Below this MAP ischaemia progresses faster. */
+    mepHypotension: 70,
+  },
+  bleed: {
+    /** Rupture bleeding (ml/s) at normal pressure with full inflow. */
+    ruptureMlPerS: 4.5,
+    /** Arterial injury of a major vessel (ml/s). */
+    arterialMlPerS: 2.2,
+    /** Ooze from a small vessel (ml/s per unit injury rate). */
+    oozeMlPerS: 0.18,
+    /** Suction capacity (ml/s) when the tip is in blood. */
+    suctionMlPerS: 2.4,
+    /** Natural drainage out of the field (ml/s). */
+    drainMlPerS: 0.03,
+    /** Pool rise per ml in the cavity (mm). */
+    mmPerMl: 1.1,
+    maxPoolMm: 26,
+    /** Gravity in the head frame: supine, head turned left ~30° and extended. */
+    gravity: [0.45, 0.25, -0.86] as [number, number, number],
+  },
   eval: {
     /** Clip plane this far out along the neck (mm) still counts as flush with the parent artery. */
     flushNeckMm: 0.6,

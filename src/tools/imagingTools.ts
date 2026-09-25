@@ -2,11 +2,11 @@ import { Tool, type ToolContext, type Verdict } from './tool';
 import type { Target } from './picking';
 import * as I from './instruments';
 import { logEvent, state } from '../core/state';
+import { bus } from '../core/events';
 
 /**
- * Imaging / monitoring tools. Their full behaviour (fluorescence view, Doppler flow sounds,
- * picture-in-picture endoscope) depends on the flow model and arrives in M5; in M2 they have
- * their instruments, hover rules and a notice.
+ * Imaging / monitoring tools: ICG videoangiography, micro-Doppler and the endoscope. They read
+ * the flow model, so they show the true result of a clip.
  */
 export class IcgTool extends Tool {
   readonly id = 'icg' as const;
@@ -16,10 +16,13 @@ export class IcgTool extends Tool {
   }
   judge(): Verdict { return 'valid'; }
   onDown(): void {
-    // M3: the run is recorded for the checklist; the fluorescence view arrives in M5
-    state.checks.set('icg', state.time);
-    logEvent('icg');
-    this.notice('nIcgStub', 'info');
+    const icg = this.ctx.services.icg;
+    if (!icg) return;
+    if (!icg.active) {
+      state.checks.set('icg', state.time);
+      logEvent('icg');
+    }
+    icg.toggle();
   }
 }
 
@@ -33,13 +36,33 @@ export class DopplerTool extends Tool {
   judge(t: Target): Verdict {
     return t.kind === 'vessel' || t.kind === 'aneurysm' ? 'valid' : 'invalid';
   }
+  private reported = false;
+  private key(t: Target) {
+    return t.kind === 'aneurysm' ? 'aneurysm' : t.structure;
+  }
   onDown(t: Target | null): void {
+    this.reported = false;
     if (!t || this.judge(t) !== 'valid') return;
-    // M3: the check is recorded for the checklist; flow sounds arrive in M5
-    const key = t.kind === 'aneurysm' ? 'aneurysm' : t.structure;
+    const key = this.key(t);
     state.checks.set(`doppler:${key}`, state.time);
     logEvent('doppler', key);
-    this.notice('nDopplerStub', 'info');
+  }
+  onUp(): void {
+    this.ctx.services.doppler?.(null);
+  }
+  deactivate(): void {
+    this.ctx.services.doppler?.(null);
+  }
+  /** While the probe touches a vessel you hear its flow; silence means no flow. */
+  update(): void {
+    const t = this.target;
+    if (!this.pressed || !t || this.judge(t) !== 'valid') { this.ctx.services.doppler?.(null); return; }
+    const flow = state.flow[this.key(t)] ?? 1;
+    this.ctx.services.doppler?.(flow);
+    if (!this.reported) {
+      this.reported = true;
+      bus.emit('notice', { key: flow > 0.05 ? 'nDopplerFlow' : 'nDopplerNoFlow', level: flow > 0.05 ? 'info' : 'warn', arg: t.kind === 'aneurysm' ? 'a.dome' : `a.${t.structure}` });
+    }
   }
 }
 
@@ -50,6 +73,9 @@ export class EndoscopeTool extends Tool {
     super(ctx);
     this.instrument = I.endoscope();
   }
-  judge(t: Target): Verdict { return t.kind === 'aneurysm' || t.kind === 'vessel' || t.kind === 'nerve' ? 'valid' : 'invalid'; }
-  onDown(): void { this.notice('nComingM5', 'info'); }
+  judge(): Verdict { return 'valid'; }
+  onDown(): void {
+    if (!this.ctx.services.endoscope?.active) logEvent('endoscope');
+    this.ctx.services.endoscope?.toggle();
+  }
 }

@@ -146,11 +146,15 @@ export class BipolarTool extends Tool {
     bus.emit('coagulate', { point: t.point.clone(), structure: t.structure });
     // seal any bleeding point under the tips
     for (const inj of state.injuries) {
-      if (!inj.stopped && inj.kind === 'ooze' && inj.point.distanceTo(t.point) < 1.8) {
-        inj.stopped = true;
-        logEvent('haemostasis', inj.structure);
-        this.notice('nOozeStopped', 'info');
+      if (inj.stopped || inj.point.distanceTo(t.point) > 1.8) continue;
+      // an arterial tear can only be sealed once inflow is controlled (temporary clip)
+      if (inj.kind === 'arterial' && (state.flow[inj.structure] ?? 1) > 0.5) {
+        this.notice('nArterialNeedsControl', 'warn');
+        continue;
       }
+      inj.stopped = true;
+      logEvent('haemostasis', inj.structure);
+      this.notice('nOozeStopped', 'info');
     }
     if (t.kind === 'vessel') {
       logEvent('vessel-coagulated', t.structure);

@@ -18,6 +18,8 @@ function blockedOrFirst(hits: Target[], accept: (h: Target) => boolean): Target 
 
 let clipId = 0;
 
+export type ClipPose = Omit<PlacedClip, 'id' | 'object' | 'variant'>;
+
 /**
  * Permanent aneurysm clip. The ghost clip follows the cursor:
  *   Q / E  roll the clip around the microscope axis (which way the blades close)
@@ -35,7 +37,7 @@ export class ClipTool extends Tool {
   private ghosts: Record<'straight' | 'curved', I.ClipModel>;
   private ghostMat = new THREE.MeshPhysicalMaterial({ color: '#b7bec8', metalness: 0.9, roughness: 0.25, transparent: true, opacity: 0.55, envMapIntensity: 3 });
   private clipsGroup: THREE.Group;
-  private pose: Omit<PlacedClip, 'id' | 'object' | 'variant'> | null = null;
+  private pose: ClipPose | null = null;
 
   constructor(ctx: ToolContext) {
     super(ctx);
@@ -126,15 +128,28 @@ export class ClipTool extends Tool {
     if (!t) return;
     if (t.kind === 'arachnoid') { this.notice('nArachnoidBlocks', 'info'); return; }
     if (this.judge(t) === 'invalid' || !this.pose) { this.notice('nClipNoTarget', 'info'); return; }
+    this.place(this.pose);
+  }
+
+  /** Show the ghost at an explicit pose (demo mode). */
+  showGhost(pose: ClipPose): void {
+    const g = this.ghost().group;
+    g.visible = true;
+    g.matrix.makeBasis(pose.bladeAxis, pose.widthAxis, pose.closeAxis).setPosition(pose.head);
+    g.matrix.decompose(g.position, g.quaternion, g.scale);
+  }
+
+  /** Close a clip at the given pose. */
+  place(pose: ClipPose): void {
     const model = I.clipModel(state.clipVariant, I.MATS.titanium);
     model.setGap(0.35); // blades closed on the flattened neck
     const g = model.group;
-    g.matrix.copy(this.ghost().group.matrix);
+    g.matrix.makeBasis(pose.bladeAxis, pose.widthAxis, pose.closeAxis).setPosition(pose.head);
     g.matrix.decompose(g.position, g.quaternion, g.scale);
     const placed: PlacedClip = {
       id: ++clipId, variant: state.clipVariant, object: g,
-      head: this.pose.head.clone(), tips: this.pose.tips.clone(),
-      bladeAxis: this.pose.bladeAxis.clone(), closeAxis: this.pose.closeAxis.clone(), widthAxis: this.pose.widthAxis.clone(),
+      head: pose.head.clone(), tips: pose.tips.clone(),
+      bladeAxis: pose.bladeAxis.clone(), closeAxis: pose.closeAxis.clone(), widthAxis: pose.widthAxis.clone(),
     };
     g.traverse(o => { o.userData.kind = 'clip'; o.userData.clipId = placed.id; });
     this.clipsGroup.add(g);

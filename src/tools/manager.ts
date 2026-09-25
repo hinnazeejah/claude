@@ -53,30 +53,59 @@ export class ToolManager {
     }
     this.active = this.tools[state.tool];
 
-    dom.addEventListener('pointermove', e => {
-      this.mouse.x = e.clientX; this.mouse.y = e.clientY; this.mouse.inside = true;
-      if (this.down && this.enabled) {
-        const dx = e.clientX - this.down.x, dy = e.clientY - this.down.y;
-        this.down = { x: e.clientX, y: e.clientY };
-        this.pickNow();
-        this.active.onDrag(this.active.target, dx, dy, Math.hypot(dx, dy) * ctx.mmPerPx());
-      }
-    });
-    dom.addEventListener('pointerleave', () => (this.mouse.inside = false));
+    // Real input is ignored while demo mode drives the virtual pointer (except for take-over).
+    dom.addEventListener('pointermove', e => { if (!this.virtual) this.move(e.clientX, e.clientY); });
+    dom.addEventListener('pointerleave', () => { if (!this.virtual) this.mouse.inside = false; });
     dom.addEventListener('pointerdown', e => {
-      if (!this.enabled || e.button !== 0 || e.altKey) return;
-      this.down = { x: e.clientX, y: e.clientY };
-      this.pickNow();
-      this.active.pressed = true;
-      this.active.onDown(this.active.target);
+      if (this.virtual || e.button !== 0 || e.altKey) return;
+      this.press();
     });
-    window.addEventListener('pointerup', e => {
-      if (e.button !== 0 || !this.down) return;
-      this.down = null;
-      this.active.pressed = false;
-      this.active.onUp();
-    });
+    window.addEventListener('pointerup', e => { if (!this.virtual && e.button === 0) this.release(); });
     window.addEventListener('keydown', e => this.onKey(e));
+  }
+
+  get pointer(): { x: number; y: number } {
+    return { x: this.mouse.x, y: this.mouse.y };
+  }
+
+  /** When true, only demo mode moves the pointer. */
+  virtual = false;
+
+  move(x: number, y: number): void {
+    this.mouse.x = x; this.mouse.y = y; this.mouse.inside = true;
+    if (this.down && this.enabled) {
+      const dx = x - this.down.x, dy = y - this.down.y;
+      this.down = { x, y };
+      this.pickNow();
+      this.active.onDrag(this.active.target, dx, dy, Math.hypot(dx, dy) * this.ctx.mmPerPx());
+    }
+  }
+
+  press(): void {
+    if (!this.enabled) return;
+    this.down = { x: this.mouse.x, y: this.mouse.y };
+    this.pickNow();
+    this.active.pressed = true;
+    this.active.onDown(this.active.target);
+  }
+
+  release(): void {
+    if (!this.down) return;
+    this.down = null;
+    this.active.pressed = false;
+    this.active.onUp();
+  }
+
+  /** Screen position of a world point. */
+  screenOf(p: THREE.Vector3): { x: number; y: number } {
+    const v = p.clone().project(this.ctx.camera);
+    return { x: ((v.x + 1) / 2) * this.dom.clientWidth, y: ((1 - v.y) / 2) * this.dom.clientHeight };
+  }
+
+  /** Current target of the active tool (after a fresh pick). */
+  peek(): Target | null {
+    this.pickNow();
+    return this.active.target;
   }
 
   select(id: ToolId): void {
@@ -91,6 +120,7 @@ export class ToolManager {
   }
 
   private onKey(e: KeyboardEvent): void {
+    if (this.virtual) return;
     if (!this.enabled || e.repeat && !'qeadws'.includes(e.key.toLowerCase())) return;
     if (/^[0-9]$/.test(e.key)) {
       const i = e.key === '0' ? 9 : Number(e.key) - 1;

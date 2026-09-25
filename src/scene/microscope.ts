@@ -63,6 +63,18 @@ export class MicroscopeControls {
     }
   }
 
+  /** Tilt the scope (radians, within the allowed cone) — used by demo mode. */
+  setTilt(yaw: number, pitch: number): void {
+    const lim = THREE.MathUtils.degToRad(ANATOMY.microscope.maxTilt);
+    this.goalYaw = THREE.MathUtils.clamp(yaw, -lim, lim);
+    this.goalPitch = THREE.MathUtils.clamp(pitch, -lim, lim);
+  }
+
+  setFov(f: number): void {
+    const m = ANATOMY.microscope;
+    this.goalFov = THREE.MathUtils.clamp(f, m.fovMin, m.fovMax);
+  }
+
   focusOn(p: THREE.Vector3): void {
     this.goalTarget.copy(p);
   }

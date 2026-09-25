@@ -13,6 +13,12 @@ export interface ToolContext {
   marks: Marks;
   /** World size of one screen pixel at the focal plane (mm). */
   mmPerPx(): number;
+  /** Late-bound services (M5): ICG view, endoscope PiP, Doppler audio. */
+  services: {
+    icg?: { toggle(): void; active: boolean };
+    endoscope?: { toggle(): void; active: boolean };
+    doppler?: (flow: number | null) => void;
+  };
 }
 
 /** How a tool treats what is under the cursor. */

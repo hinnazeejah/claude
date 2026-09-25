@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { bus } from './events';
 import { SIM } from '../config/sim';
+import type { ClipResult } from '../physics/clipEval';
 
 export type ToolId =
   | 'suction' | 'scissors' | 'bipolar' | 'dissector' | 'spatula'
@@ -73,6 +74,12 @@ export const state = {
   checks: new Map<string, number>(),
   /** Time of the most recent clip application / removal (checks must come after it). */
   lastClipChange: -1,
+  /** Latest clip evaluation (null = no clip). */
+  clipResult: null as ClipResult | null,
+  /** Relative flow per vessel (flow model, updated every frame). */
+  flow: {} as Record<string, number>,
+  /** Physiology snapshot for tools and the debrief. */
+  vitals: { map: 88, ebl: 0, mep: 100, minMap: 88, minMep: 100, bleedRate: 0 },
   /** Procedure progress (M3 stage engine). */
   stage: 0,
   complete: false,
